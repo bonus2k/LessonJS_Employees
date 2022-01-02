@@ -5,8 +5,8 @@ class EmployeesListItem extends Component{
     constructor(props) {
         super(props);
         this.state = {
-            increase: false,
-            like: false
+            increase: this.props.increase,
+            like: this.props.like
         }
     }
 
@@ -23,7 +23,7 @@ class EmployeesListItem extends Component{
     }
 
     render() {
-        const {name, salary} = this.props;
+        const {name, salary, onDelete} = this.props;
         const {increase, like} = this.state;
         let liClassName = "list-group-item d-flex justify-content-between";
         liClassName = (increase) ? liClassName.concat(" increase") : liClassName;
@@ -40,6 +40,7 @@ class EmployeesListItem extends Component{
                         <i className="fas fa-cookie"></i>
                     </button>
                     <button type="button"
+                            onClick={onDelete}
                             className="btn-trash btn-sm">
                         <i className="fas fa-trash"></i>
                     </button>

@@ -7,7 +7,8 @@ class EmployeesAddForm extends Component {
         super(props);
         this.state = {
             name: '',
-            salary: ''
+            salary: '',
+            increase: false
         }
     }
 
@@ -19,11 +20,12 @@ class EmployeesAddForm extends Component {
 
     render() {
         const {name, salary} = this.state;
+        const {onCreate} = this.props;
 
         return (
             <div className="app-add-form">
                 <h3>Добавьте нового сотрудника</h3>
-                <form className="add-form d-flex">
+                <form className="add-form d-flex" method="POST">
                     <input type="text" className="form-control new-post-label"
                            name="name"
                            value={name}
@@ -35,6 +37,7 @@ class EmployeesAddForm extends Component {
                            onChange={this.onInputValue}
                            placeholder="З/П в $?"/>
                     <button type="submit"
+                            onClick={(event => onCreate(event, this.state))}
                             className="btn btn-outline-light">Добавить
                     </button>
                 </form>
