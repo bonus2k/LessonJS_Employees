@@ -14,10 +14,16 @@ class App extends Component {
         super(props);
         this.state = {
             data: [
-                {name: 'John B.', salary: 800, increase: true, id: 1},
-                {name: 'Alex S.', salary: 1100, increase: true, id: 2},
-                {name: 'Ann D.', salary: 1800, increase: false, id: 3}
-            ]
+                {name: 'John B.', salary: 800, increase: true, rise: false, id: 1},
+                {name: 'Alex S.', salary: 1100, increase: true, rise: true, id: 2},
+                {name: 'Ann D.', salary: 1800, increase: false, rise: false, id: 3}
+            ],
+            search: '',
+            setFilter: {
+                allEmp: true,
+                isRise: false,
+                is1000: false
+            }
         }
     }
 
@@ -29,31 +35,94 @@ class App extends Component {
         })
     }
 
-    createItem = (event, obj) => {
+    createItem = (event, name, salary) => {
         event.preventDefault();
-        const countMaxId = (previousValue, currentValue) => {
-            return previousValue > currentValue.id ? previousValue + 1 : currentValue.id + 1;
-        };
-        obj['id']=this.state.data.reduce(countMaxId, 0);
-        this.setState(({data})=>{
+        if (name && salary && !this.state.data.filter(item => item.name === name).length) {
+
+            const countMaxId = (previousValue, currentValue) => {
+                return previousValue > currentValue.id ? previousValue + 1 : currentValue.id + 1;
+            };
+
+            const newItem = {
+                id: this.state.data.reduce(countMaxId, 0),
+                name: name,
+                salary: salary,
+                increase: true,
+                rise: true
+            }
+
+            this.setState(({data}) => {
+                return {
+                    data: [...data, newItem]
+                }
+            })
+        }
+    }
+
+    onToggleProp = (id, prop) => {
+        this.setState(({data}) => {
             return {
-                data: [...data, obj]
+                data: data.map(item => {
+                    if (item.id === id) {
+                        item = {...item, [prop]: !item[prop]}
+                    }
+                    return item;
+                })
             }
         })
     }
 
+    searchItem = (data, search) => {
+        if (!search) {
+            return data
+        }
+        return data.filter(item => item.name.includes(search));
+    }
+
+    updateSearch = (search) => {
+        this.setState({search})
+    }
+
+    updateButtonFilter = (setFilter) => {
+        this.setState({setFilter})
+    }
+
+    filterItem = (data) => {
+        const {allEmp, isRise, is1000} = this.state.setFilter;
+        if (allEmp){
+            return data;
+        }
+
+        if (isRise) {
+            data = data.filter(item => item.rise);
+        }
+        if (is1000) {
+            data = data.filter(item => item.salary > 1000)
+        }
+        return data;
+    }
+
+
+
     render() {
-        const {data} = this.state;
+        const {data, search} = this.state,
+            countEmployees = this.state.data.length,
+            countIsIncreaseEmp = this.state.data.filter(item => item.increase).length,
+            searchData = this.searchItem(data, search);
 
         return (
             <div className="app">
-                <AppInfo/>
+                <AppInfo countEmployees={countEmployees}
+                         countIsIncreaseEmp={countIsIncreaseEmp}/>
                 <div className="search-panel">
-                    <SearchPanel/>
-                    <AppFilter/>
+                    <SearchPanel updateSearch={this.updateSearch}/>
+                    <AppFilter setButton={this.updateButtonFilter}/>
                 </div>
-                <EmployeesList data={data} onDelete={(id) => this.deleteItem(id)}/>
-                <EmployeesAddForm onCreate={(event, obj) => this.createItem(event, obj)}/>
+                <EmployeesList
+                    data={this.filterItem(searchData)}
+                    onDelete={this.deleteItem}
+                    onToggleProp={this.onToggleProp}/>
+                <EmployeesAddForm onCreate={(event, name, salary) => this.createItem(event, name, salary)}/>
             </div>
         )
     }

@@ -8,7 +8,8 @@ class EmployeesAddForm extends Component {
         this.state = {
             name: '',
             salary: '',
-            increase: false
+            increase: false,
+            rise: false
         }
     }
 
@@ -37,7 +38,7 @@ class EmployeesAddForm extends Component {
                            onChange={this.onInputValue}
                            placeholder="З/П в $?"/>
                     <button type="submit"
-                            onClick={(event => onCreate(event, this.state))}
+                            onClick={(event => onCreate(event, name, salary))}
                             className="btn btn-outline-light">Добавить
                     </button>
                 </form>
